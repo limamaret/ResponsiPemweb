@@ -6,6 +6,11 @@ const DB_NAME = 'jobconnect';
 const DB_USER = 'root';
 const DB_PASS = '';
 
+// Role constants
+const ROLE_ADMIN = 'admin';
+const ROLE_JOB_SEEKER = 'job_seeker';
+const ROLE_COMPANY = 'company';
+
 if (session_status() === PHP_SESSION_NONE) {
     // Use secure cookie settings when the site is served over HTTPS.
     $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';

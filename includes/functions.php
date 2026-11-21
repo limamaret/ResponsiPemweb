@@ -44,7 +44,7 @@ function dashboard_for_role(string $role): string {
     return match ($role) {
         'admin' => 'admin/dashboard.php',
         'job_seeker' => 'job-seeker/dashboard.php',
-        'recruiter' => 'recruiter/dashboard.php',
+        'company' => 'company/dashboard.php',
         default => 'index.php',
     };
 }
@@ -57,4 +57,12 @@ function flash(string $key, ?string $message = null): ?string {
     $value = $_SESSION['flash'][$key] ?? null;
     unset($_SESSION['flash'][$key]);
     return $value;
+}
+
+function format_salary(?int $min, ?int $max): string {
+    $fmt = fn(int $n) => 'Rp ' . number_format($n, 0, ',', '.');
+    if ($min && $max) return $fmt($min) . ' - ' . $fmt($max);
+    if ($min) return 'Min. ' . $fmt($min);
+    if ($max) return 'Max. ' . $fmt($max);
+    return 'Gaji negociable';
 }

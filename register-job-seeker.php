@@ -33,5 +33,5 @@ include __DIR__ . '/includes/auth-form.php';
 <label class="check"><input type="checkbox" required> Saya menyetujui syarat dan ketentuan Rangkul.</label>
 <button class="btn btn-primary btn-block" type="submit">Buat Akun Job Seeker</button>
 </form><p class="switch-auth">Sudah punya akun? <a href="login-job-seeker.php">Login</a></p>
-<p class="switch-auth muted tiny">Mewakili perusahaan? <a href="register-recruiter.php">Daftar sebagai Recruiter</a></p>
+<p class="switch-auth muted tiny">Mewakili perusahaan? <a href="register-recruiter.php">Daftar sebagai Perusahaan</a></p>
 </div></main></div><script src="assets/js/custom-cursor.js" defer></script></body></html>

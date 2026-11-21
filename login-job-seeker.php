@@ -18,5 +18,5 @@ include __DIR__ . '/includes/auth-form.php';
 <div class="form-row"><label class="check"><input type="checkbox" name="remember_hint"> Ingat saya</label><span class="muted tiny">Lupa password? Hubungi admin.</span></div>
 <button class="btn btn-primary btn-block" type="submit">Masuk sebagai Job Seeker</button>
 </form><p class="switch-auth">Belum punya akun? <a href="register-job-seeker.php">Daftar Job Seeker</a></p>
-<p class="switch-auth muted tiny">Mencari kandidat? <a href="login-recruiter.php">Login Recruiter</a></p>
+<p class="switch-auth muted tiny">Mewakili perusahaan? <a href="login-recruiter.php">Login Perusahaan</a></p>
 </div></main></div><script src="assets/js/custom-cursor.js" defer></script></body></html>
