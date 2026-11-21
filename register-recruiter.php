@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     else {
         try {
             $pdo->beginTransaction();
-            $stmt = $pdo->prepare("INSERT INTO users (name,email,password,role,status) VALUES (?,?,?,'recruiter','pending')");
+            $stmt = $pdo->prepare("INSERT INTO users (name,email,password,role,status) VALUES (?,?,?,'recruiter','active')");
             $stmt->execute([$name,$email,password_hash($password,PASSWORD_DEFAULT)]);
             $userId = (int)$pdo->lastInsertId();
             $stmt = $pdo->prepare("INSERT INTO companies (user_id, company_name, phone, verification_status) VALUES (?,?,?,'pending')");
             $stmt->execute([$userId,$company,$phone]);
             $pdo->commit();
-            flash('success','Pendaftaran Recruiter berhasil. Akun menunggu verifikasi Admin.');
+            flash('success','Pendaftaran perusahaan berhasil. Silakan login, lengkapi profil perusahaan, lalu tunggu verifikasi Admin.');
             redirect('login-recruiter.php');
         } catch (PDOException $e) {
             if ($pdo->inTransaction()) $pdo->rollBack();

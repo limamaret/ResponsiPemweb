@@ -1,8 +1,23 @@
 <?php
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/includes/functions.php';
+require_once __DIR__ . '/includes/company.php';        // helper sisi Company (tampilan lowongan & perusahaan)
+require_once __DIR__ . '/includes/public-layout.php';
 if (current_user()) { redirect(dashboard_for_role(current_user()['role'])); }
 $success = flash('success'); $error = flash('error');
+// Data dinamis untuk bagian "Lowongan terbaru" & "Perusahaan inklusif"
+$latestJobs = []; $inclusiveCompanies = [];
+try {
+    $latestJobs = $pdo->query(
+        "SELECT v.*, cat.name AS category_name, c.company_name, c.logo, c.verification_status
+         FROM vacancies v JOIN categories cat ON cat.id = v.category_id JOIN companies c ON c.id = v.company_id
+         WHERE v.status = 'open' AND v.deadline >= CURDATE() ORDER BY v.created_at DESC, v.id DESC LIMIT 6"
+    )->fetchAll();
+    $inclusiveCompanies = $pdo->query(
+        "SELECT c.*, (SELECT COUNT(*) FROM vacancies v WHERE v.company_id = c.id AND v.status = 'open' AND v.deadline >= CURDATE()) AS open_jobs
+         FROM companies c WHERE c.verification_status = 'verified' AND c.is_inclusive = 1 ORDER BY c.id DESC LIMIT 3"
+    )->fetchAll();
+} catch (PDOException $e) { /* migrasi database-company.sql belum dijalankan: bagian ini disembunyikan */ }
 ?>
 <!doctype html>
 <html lang="id">
@@ -13,6 +28,7 @@ $success = flash('success'); $error = flash('error');
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/company.css">
 <script src="assets/js/landing-interactions.js" defer></script>
 <script src="assets/js/custom-cursor.js" defer></script>
 </head>
@@ -20,8 +36,8 @@ $success = flash('success'); $error = flash('error');
 <a class="skip-link" href="#konten">Lewati ke konten utama</a>
 <header class="landing-nav"><div class="landing-nav-inner">
 <a class="landing-brand" href="index.php" aria-label="Rangkul, halaman utama"><img src="assets/img/rangkul-logo.png" alt="Rangkul"></a>
-<nav class="landing-links" aria-label="Navigasi utama"><a href="#tentang">Tentang</a><a href="#keunggulan">Keunggulan</a><a href="#cara-kerja">Cara kerja</a><a href="#fitur">Fitur</a><a href="#aksesibilitas">Aksesibilitas</a><a href="#faq">FAQ</a></nav>
-<div class="landing-nav-actions"><a class="nav-login" href="login-job-seeker.php">Masuk</a><button class="mobile-menu" type="button" aria-label="Buka navigasi" aria-expanded="false">☰</button></div>
+<nav class="landing-links" aria-label="Navigasi utama"><a href="#tentang">Tentang</a><a href="#keunggulan">Keunggulan</a><a href="#cara-kerja">Cara kerja</a><?php if ($latestJobs || $inclusiveCompanies): ?><a href="#lowongan">Lowongan</a><?php endif; ?><a href="#fitur">Fitur</a><a href="#aksesibilitas">Aksesibilitas</a><a href="#faq">FAQ</a></nav>
+<div class="landing-nav-actions"><a class="nav-login" href="login-recruiter.php">Untuk Perusahaan</a><a class="nav-login" href="login-job-seeker.php">Masuk</a><button class="mobile-menu" type="button" aria-label="Buka navigasi" aria-expanded="false">☰</button></div>
 </div></header>
 <main id="konten">
 <?php if ($success): ?><div class="notice success landing-notice"><?= e($success) ?></div><?php endif; ?>
@@ -91,11 +107,27 @@ $success = flash('success'); $error = flash('error');
 </div><button type="button" class="reset-access" id="reset-access">Kembalikan pengaturan awal</button></div>
 </div></section>
 
+<?php if ($latestJobs || $inclusiveCompanies): ?>
+<section class="pub-section" id="lowongan" aria-labelledby="h-lowongan"><div class="inner">
+<span class="section-eyebrow">LOWONGAN &amp; PERUSAHAAN</span>
+<h2 id="h-lowongan">Kesempatan terbaru dari perusahaan di Rangkul.</h2>
+<p class="lead">Lowongan berikut dipasang langsung oleh perusahaan. Tag aksesibilitas membantu Anda menilai kecocokan sebelum melamar.</p>
+<?php if ($latestJobs): ?><div class="job-cards"><?php foreach ($latestJobs as $v) public_job_card($v); ?></div><?php endif; ?>
+<?php if ($inclusiveCompanies): ?><h3 style="margin:42px 0 0;font-size:20px">Perusahaan inklusif terverifikasi</h3>
+<div class="co-cards"><?php foreach ($inclusiveCompanies as $co): ?>
+<a class="co-card" href="company.php?id=<?= (int)$co['id'] ?>"><?= company_logo_html($co['logo'], $co['company_name'], '', 'co-logo co-logo-sm') ?>
+<h3><?= e($co['company_name']) ?> <span class="badge badge-ok">✓</span></h3>
+<p><?= e(mb_strimwidth((string)$co['description'], 0, 110, '…')) ?></p>
+<span class="badge badge-inclusive">♡ Inklusif</span> <span class="tag"><?= (int)$co['open_jobs'] ?> lowongan aktif</span></a>
+<?php endforeach; ?></div><?php endif; ?>
+</div></section>
+<?php endif; ?>
+
 <section class="faq-section" id="faq"><div class="faq-wrap"><div class="section-heading"><span class="section-eyebrow">YANG SERING DITANYAKAN</span><h2>Masih ingin tahu lebih jauh?</h2><p>Temukan jawaban singkat tentang Rangkul dan cara penggunaannya.</p></div><div class="faq-list">
 <article class="faq-item"><h3><button type="button" aria-expanded="false">Apa itu Rangkul?<span aria-hidden="true">＋</span></button></h3><div class="faq-answer" hidden><p>Rangkul adalah platform rekrutmen yang menghubungkan pencari kerja dengan perusahaan, sekaligus membantu mengelola informasi lowongan, lamaran, seleksi, dan wawancara.</p></div></article>
 <article class="faq-item"><h3><button type="button" aria-expanded="false">Siapa yang dapat menggunakan Rangkul?<span aria-hidden="true">＋</span></button></h3><div class="faq-answer" hidden><p>Rangkul ditujukan bagi pencari kerja dan perwakilan perusahaan. Pengelolaan platform dilakukan oleh administrator.</p></div></article>
 <article class="faq-item"><h3><button type="button" aria-expanded="false">Apakah Rangkul ditujukan untuk penyandang disabilitas juga?<span aria-hidden="true">＋</span></button></h3><div class="faq-answer" hidden><p>Ya. Rangkul memiliki arah pengembangan inklusif. Kami ingin mengurangi hambatan penggunaan melalui desain yang jelas, navigasi yang dapat diakses, dan dukungan teknologi bantu. Implementasinya perlu diuji secara berkala bersama pengguna dengan kebutuhan akses yang beragam.</p></div></article>
-<article class="faq-item"><h3><button type="button" aria-expanded="false">Apakah lowongan di halaman ini merupakan lowongan aktif?<span aria-hidden="true">＋</span></button></h3><div class="faq-answer" hidden><p>Tidak. Halaman ini merupakan pengenalan platform, bukan daftar lowongan aktif. Informasi lowongan akan tersedia melalui fitur di dalam aplikasi setelah modul tersebut digunakan.</p></div></article>
+<article class="faq-item"><h3><button type="button" aria-expanded="false">Apakah lowongan di halaman ini aktif?<span aria-hidden="true">＋</span></button></h3><div class="faq-answer" hidden><p>Bagian "Lowongan terbaru" pada halaman ini menampilkan lowongan yang sedang dibuka perusahaan. Masa berlaku setiap lowongan mengikuti deadline yang ditetapkan perusahaan; lowongan yang ditutup atau melewati deadline tidak ditampilkan.</p></div></article>
 </div></div></section>
 
 <section class="closing-cta"><div class="cta-decoration" aria-hidden="true">R</div><span class="section-eyebrow">LANGKAH BERIKUTNYA DIMULAI DARI SINI</span><h2>Siap membuka<br>kesempatan bersama?</h2><p>Pilih jalur yang sesuai dengan tujuanmu dan mulai gunakan Rangkul.</p><div class="final-actions"><a href="register-job-seeker.php" class="btn cta-white">Daftar sebagai pencari kerja <span>→</span></a><a href="register-recruiter.php" class="btn final-outline">Daftar sebagai perusahaan <span>↗</span></a></div><small>Sudah memiliki akun? <a href="login-job-seeker.php">Masuk ke Rangkul</a></small></section>
