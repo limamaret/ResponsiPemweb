@@ -196,7 +196,7 @@ $error = flash('error');
                 <article class="vacancy-card">
                     <div class="vacancy-card-header">
                         <?php if ($vacancy['company_logo']): ?>
-                            <img class="company-logo" src="../uploads/logo/<?= e($vacancy['company_logo']) ?>" alt="<?= e($vacancy['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($vacancy['company_name']) ?>') + '&background=2563eb&color=fff&size=48'">
+                            <img class="company-logo" src="../uploads/logos/<?= e($vacancy['company_logo']) ?>" alt="<?= e($vacancy['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($vacancy['company_name']) ?>') + '&background=2563eb&color=fff&size=48'">
                         <?php else: ?>
                             <div class="company-logo" style="display:grid;place-items:center;font-weight:800;color:#fff;background:#2563eb;"><?= strtoupper(mb_substr($vacancy['company_name'], 0, 1)) ?></div>
                         <?php endif; ?>

@@ -101,7 +101,7 @@ company_header('Detail Pelamar', 'applicants', $company);
 <dt>Catatan akomodasi</dt><dd><?= e($interview['accommodation_note'] ?: '-') ?></dd>
 <dt>Konfirmasi pelamar</dt><dd><span class="badge <?= $interview['status'] === 'Confirmed' ? 'badge-ok' : 'badge-wait' ?>"><?= e(interview_status_label($interview['status'])) ?></span></dd></dl>
 <div class="actions" style="margin-top:16px"><a class="btn btn-outline" href="interview-form.php?id=<?= (int)$interview['id'] ?>">Edit jadwal</a></div>
-<?php elseif ($app['status'] === 'shortlisted'): ?>
+<?php elseif ($app['status'] === 'Shortlist'): ?>
 <p style="font-size:14px;color:#475569"><?= $interview ? 'Jadwal sebelumnya telah dibatalkan. ' : 'Pelamar ini masuk Shortlist dan belum memiliki jadwal wawancara. ' ?></p>
 <a class="btn btn-primary" href="interview-form.php?application_id=<?= $id ?>">Jadwalkan wawancara</a>
 <?php else: ?><p class="empty" style="padding:6px 0">Wawancara hanya dapat dijadwalkan untuk pelamar berstatus <b>Shortlist</b>.</p><?php endif; ?></section>

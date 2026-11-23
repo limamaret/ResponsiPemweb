@@ -28,7 +28,9 @@ elseif ($when === 'past') { $where .= " AND (i.status = 'Cancelled' OR CONCAT(i.
 $base = 'FROM interviews i JOIN applications a ON a.id = i.application_id JOIN vacancies v ON v.id = a.vacancy_id JOIN job_seekers js ON js.id = a.seeker_id JOIN users u ON u.id = js.user_id';
 $c = $pdo->prepare("SELECT COUNT(*) $base WHERE $where"); $c->execute($params);
 [$page, $per, $offset, $pages] = paginate((int)$c->fetchColumn(), 10);
-$q = $pdo->prepare("SELECT i.*, a.id AS app_id, u.name AS seeker_name, v.title AS vacancy_title $base WHERE $where ORDER BY i.date " . ($when === 'upcoming' ? 'ASC' : 'DESC') . ", i.time LIMIT $per OFFSET $offset");
+$q = $pdo->prepare("SELECT i.*, a.id AS app_id, u.name AS seeker_name, v.title AS vacancy_title $base WHERE $where ORDER BY i.date " . ($when === 'upcoming' ? 'ASC' : 'DESC') . ", i.time LIMIT :per OFFSET :offset");
+$params[':per'] = $per;
+$params[':offset'] = $offset;
 $q->execute($params); $rows = $q->fetchAll();
 
 company_header('Jadwal Wawancara', 'interviews', $company);

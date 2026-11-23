@@ -178,7 +178,7 @@ $error = flash('error');
                                 </td>
                                 <td data-label="Perusahaan">
                                     <?php if ($app['company_logo']): ?>
-                                        <img src="../uploads/logo/<?= e($app['company_logo']) ?>" alt="" style="width:28px;height:28px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-right:8px;">
+                                        <img src="../uploads/logos/<?= e($app['company_logo']) ?>" alt="" style="width:28px;height:28px;border-radius:6px;object-fit:cover;vertical-align:middle;margin-right:8px;">
                                     <?php endif; ?>
                                     <?= e($app['company_name']) ?>
                                 </td>

@@ -202,7 +202,7 @@ if ($currentStatusIndex === false) $currentStatusIndex = 0;
         <!-- Vacancy & Company Info -->
         <div class="vacancy-header">
             <?php if ($application['company_logo']): ?>
-                <img class="vacancy-logo" src="../uploads/logo/<?= e($application['company_logo']) ?>" alt="<?= e($application['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($application['company_name']) ?>') + '&background=2563eb&color=fff&size=64'">
+                <img class="vacancy-logo" src="../uploads/logos/<?= e($application['company_logo']) ?>" alt="<?= e($application['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($application['company_name']) ?>') + '&background=2563eb&color=fff&size=64'">
             <?php else: ?>
                 <div class="vacancy-logo" style="display:grid;place-items:center;font-weight:800;color:#fff;background:#2563eb;font-size:24px;"><?= strtoupper(mb_substr($application['company_name'], 0, 1)) ?></div>
             <?php endif; ?>

@@ -11,8 +11,7 @@ if (!$id) {
 
 $vacancy = vacancy_get_public_detail($id);
 if (!$vacancy) {
-    http_response_code(404);
-    include __DIR__ . '/404.php';
+    header('Location: vacancies.php');
     exit;
 }
 
@@ -134,7 +133,7 @@ $error = flash('error');
     <!-- Company Card -->
     <article class="company-card">
         <?php if ($vacancy['company_logo']): ?>
-            <img class="company-logo-large" src="../uploads/logo/<?= e($vacancy['company_logo']) ?>" alt="<?= e($vacancy['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($vacancy['company_name']) ?>') + '&background=2563eb&color=fff&size=80'">
+            <img class="company-logo-large" src="../uploads/logos/<?= e($vacancy['company_logo']) ?>" alt="<?= e($vacancy['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($vacancy['company_name']) ?>') + '&background=2563eb&color=fff&size=80'">
         <?php else: ?>
             <div class="company-logo-large" style="display:grid;place-items:center;font-weight:800;color:#fff;background:#2563eb;font-size:28px;"><?= strtoupper(mb_substr($vacancy['company_name'], 0, 1)) ?></div>
         <?php endif; ?>

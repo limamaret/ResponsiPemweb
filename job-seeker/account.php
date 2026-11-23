@@ -84,9 +84,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $new = $_POST['new_password'] ?? '';
         $confirm = $_POST['confirm_password'] ?? '';
 
+        // Reload user with password hash from DB (session doesn't have it)
+        $stmt = $pdo->prepare('SELECT password FROM users WHERE id = ?');
+        $stmt->execute([$user['id']]);
+        $dbUser = $stmt->fetch();
+
         if ($current === '' || $new === '' || $confirm === '') {
             $error = 'Semua kolom password wajib diisi.';
-        } elseif (!password_verify($current, $user['password'])) {
+        } elseif (!$dbUser || !password_verify($current, $dbUser['password'])) {
             $error = 'Password saat ini salah.';
         } elseif (strlen($new) < 8) {
             $error = 'Password baru minimal 8 karakter.';

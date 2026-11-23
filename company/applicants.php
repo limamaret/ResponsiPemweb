@@ -20,8 +20,10 @@ $q = $pdo->prepare(
     "SELECT a.id, a.status, a.created_at, u.name AS seeker_name, v.title AS vacancy_title, js.disability_type
      FROM applications a JOIN vacancies v ON v.id = a.vacancy_id
      JOIN job_seekers js ON js.id = a.seeker_id JOIN users u ON u.id = js.user_id
-     WHERE $where ORDER BY a.created_at DESC, a.id DESC LIMIT $per OFFSET $offset"
+     WHERE $where ORDER BY a.created_at DESC, a.id DESC LIMIT :per OFFSET :offset"
 );
+$params[':per'] = $per;
+$params[':offset'] = $offset;
 $q->execute($params); $rows = $q->fetchAll();
 
 company_header('Daftar Pelamar', 'applicants', $company);

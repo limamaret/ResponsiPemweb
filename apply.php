@@ -170,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="vacancy-summary">
         <?php if ($vacancy['company_logo']): ?>
-            <img class="vacancy-summary-logo" src="../uploads/logo/<?= e($vacancy['company_logo']) ?>" alt="<?= e($vacancy['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($vacancy['company_name']) ?>') + '&background=2563eb&color=fff&size=56'">
+            <img class="vacancy-summary-logo" src="../uploads/logos/<?= e($vacancy['company_logo']) ?>" alt="<?= e($vacancy['company_name']) ?>" onerror="this.src='https://ui-avatars.com/api/?name=' + encodeURIComponent('<?= e($vacancy['company_name']) ?>') + '&background=2563eb&color=fff&size=56'">
         <?php else: ?>
             <div class="vacancy-summary-logo" style="display:grid;place-items:center;font-weight:800;color:#fff;background:#2563eb;"><?= strtoupper(mb_substr($vacancy['company_name'], 0, 1)) ?></div>
         <?php endif; ?>

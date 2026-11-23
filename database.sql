@@ -58,6 +58,18 @@ CREATE TABLE IF NOT EXISTS categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+-- Seed categories
+INSERT IGNORE INTO categories (name) VALUES
+('Teknologi'),
+('Pendidikan'),
+('Kesehatan'),
+('Administrasi'),
+('Kreatif'),
+('Keuangan'),
+('Pemasaran'),
+('Manufaktur'),
+('Lainnya');
+
 -- Vacancies table
 CREATE TABLE IF NOT EXISTS vacancies (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -117,17 +129,3 @@ CREATE TABLE IF NOT EXISTS interviews (
     INDEX idx_interviews_date (date),
     INDEX idx_interviews_status (status)
 ) ENGINE=InnoDB;
-
--- Seed categories
-INSERT IGNORE INTO categories (name) VALUES
-('Teknologi'),
-('Pendidikan'),
-('Kesehatan'),
-('Administrasi'),
-('Kreatif'),
-('Keuangan'),
-('Pemasaran'),
-('Manufaktur'),
-('Lainnya');
-
--- Admin dibuat melalui setup-admin.php setelah database diimpor.

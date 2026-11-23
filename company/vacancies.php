@@ -34,8 +34,10 @@ $q = $pdo->prepare(
     "SELECT v.*, cat.name AS category_name,
             (SELECT COUNT(*) FROM applications a WHERE a.vacancy_id = v.id AND a.status <> 'Dibatalkan') AS applicant_count
      FROM vacancies v JOIN categories cat ON cat.id = v.category_id
-     WHERE $where ORDER BY v.created_at DESC, v.id DESC LIMIT $per OFFSET $offset"
+     WHERE $where ORDER BY v.created_at DESC, v.id DESC LIMIT :per OFFSET :offset"
 );
+$params[':per'] = $per;
+$params[':offset'] = $offset;
 $q->execute($params); $rows = $q->fetchAll();
 
 company_header('Kelola Lowongan', 'vacancies', $company);
