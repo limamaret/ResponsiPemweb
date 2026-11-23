@@ -258,7 +258,7 @@ $error = flash('error');
         <?php if ($totalPages > 1): ?>
             <nav class="pagination" aria-label="Pagination">
                 <?php if ($page > 1): ?>
-                    <a href="<?= build_url(['page' => $page - 1]) ?>">&laquo; Sebelumnya</a>
+                    <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1])) ?>">&laquo; Sebelumnya</a>
                 <?php else: ?>
                     <span class="disabled">&laquo; Sebelumnya</span>
                 <?php endif; ?>
@@ -270,11 +270,11 @@ $error = flash('error');
                     <?php if ($i === $page): ?>
                         <span class="current"><?= $i ?></span>
                     <?php else: ?>
-                        <a href="<?= build_url(['page' => $i]) ?>"><?= $i ?></a>
+                        <a href="?<?= http_build_query(array_merge($_GET, ['page' => $i])) ?>"><?= $i ?></a>
                     <?php endif; ?>
                 <?php endfor; ?>
                 <?php if ($page < $totalPages): ?>
-                    <a href="<?= build_url(['page' => $page + 1]) ?>">Selanjutnya &raquo;</a>
+                    <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1])) ?>">Selanjutnya &raquo;</a>
                 <?php else: ?>
                     <span class="disabled">Selanjutnya &raquo;</span>
                 <?php endif; ?>
