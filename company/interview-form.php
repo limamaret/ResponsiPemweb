@@ -20,24 +20,24 @@ if (!$app) not_found('applicants.php');
 if (!$interview) { // kemungkinan ada jadwal lama untuk lamaran ini
     $s = $pdo->prepare('SELECT * FROM interviews WHERE application_id = ? LIMIT 1');
     $s->execute([$appId]); $old = $s->fetch() ?: null;
-    if ($old && $old['status'] !== 'cancelled') redirect('interview-form.php?id=' . (int)$old['id']);
+    if ($old && $old['status'] !== 'Cancelled') redirect('interview-form.php?id=' . (int)$old['id']);
     $interview = $old; // jadwal batal -> dipakai ulang (satu lamaran = satu jadwal)
     $reactivating = (bool)$old;
 } else { $reactivating = false; }
 
 $isNew = !$interview || $reactivating;
-if ($isNew && $app['status'] !== 'shortlisted') {
+if ($isNew && $app['status'] !== 'Shortlist') {
     flash('error', 'Wawancara hanya dapat dijadwalkan untuk pelamar berstatus Shortlist.');
     redirect('applicant-detail.php?id=' . $appId);
 }
-if (!$isNew && in_array($app['status'], ['rejected', 'cancelled'], true)) {
+if (!$isNew && in_array($app['status'], ['Ditolak', 'Dibatalkan'], true)) {
     flash('error', 'Jadwal tidak dapat diubah karena lamaran sudah ' . strtolower(application_statuses()[$app['status']]) . '.');
     redirect('applicant-detail.php?id=' . $appId);
 }
 
 $errors = [];
 $f = $interview && !$reactivating ? [
-    'date' => $interview['interview_date'], 'time' => substr($interview['interview_time'], 0, 5), 'mode' => $interview['mode'],
+    'date' => $interview['date'], 'time' => substr($interview['time'], 0, 5), 'mode' => $interview['mode'],
     'loc' => $interview['location_or_link'], 'note' => $interview['accommodation_note'] ?? '',
 ] : ['date' => '', 'time' => '', 'mode' => 'online', 'loc' => '', 'note' => ''];
 
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dateOk = valid_date($f['date']); $timeOk = valid_time($f['time']);
     if (!$dateOk) $errors['date'] = 'Tanggal wawancara wajib diisi dengan format yang valid.';
     if (!$timeOk) $errors['time'] = 'Jam wawancara wajib diisi (format JJ:MM).';
-    $changedWhen = $isNew || !$interview || $f['date'] !== $interview['interview_date'] || $f['time'] !== substr($interview['interview_time'], 0, 5);
+    $changedWhen = $isNew || !$interview || $f['date'] !== $interview['date'] || $f['time'] !== substr($interview['time'], 0, 5);
     if ($dateOk && $timeOk && $changedWhen && strtotime($f['date'] . ' ' . $f['time']) < time()) $errors['date'] = 'Jadwal wawancara tidak boleh di masa lalu.';
     if ($f['loc'] === '' || mb_strlen($f['loc']) > 255) $errors['loc'] = ($f['mode'] === 'online' ? 'Tautan' : 'Lokasi') . ' wawancara wajib diisi (maksimal 255 karakter).';
     elseif ($f['mode'] === 'online' && (!filter_var($f['loc'], FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $f['loc']))) $errors['loc'] = 'Tautan wawancara online harus berupa URL lengkap (https://...).';
@@ -61,14 +61,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $pdo->beginTransaction();
             if ($isNew && !$interview) {
-                $pdo->prepare("INSERT INTO interviews (application_id, interview_date, interview_time, mode, location_or_link, accommodation_note, status) VALUES (?,?,?,?,?,?, 'scheduled')")
+                $pdo->prepare("INSERT INTO interviews (application_id, date, time, mode, location_or_link, accommodation_note, status) VALUES (?,?,?,?,?,?, 'Scheduled')")
                     ->execute([$appId, $f['date'], $f['time'] . ':00', $f['mode'], $f['loc'], $f['note'] ?: null]);
                 $msg = 'Jadwal wawancara berhasil dibuat.';
             } else {
                 // Bila waktu/mode/lokasi berubah, pelamar perlu konfirmasi ulang.
                 $reset = $reactivating || $changedWhen || $f['mode'] !== $interview['mode'] || $f['loc'] !== $interview['location_or_link'];
-                $status = $reset ? 'scheduled' : $interview['status'];
-                $pdo->prepare('UPDATE interviews SET interview_date=?, interview_time=?, mode=?, location_or_link=?, accommodation_note=?, status=? WHERE id=?')
+                $status = $reset ? 'Scheduled' : $interview['status'];
+                $pdo->prepare('UPDATE interviews SET date=?, time=?, mode=?, location_or_link=?, accommodation_note=?, status=? WHERE id=?')
                     ->execute([$f['date'], $f['time'] . ':00', $f['mode'], $f['loc'], $f['note'] ?: null, $status, (int)$interview['id']]);
                 $msg = 'Jadwal wawancara berhasil diperbarui.' . ($reset ? ' Pelamar perlu mengonfirmasi ulang.' : '');
             }

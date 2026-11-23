@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 /**
- * Helper khusus sisi Company (role 'recruiter' pada sistem autentikasi yang ada).
+ * Helper khusus sisi Company (role 'company' pada sistem autentikasi).
  * File ini sengaja dipisah dari includes/functions.php agar tidak bentrok
  * dengan pekerjaan sisi Job Seeker.
  */
@@ -28,12 +28,12 @@ function access_options(): array {
 
 function application_statuses(): array {
     return [
-        'submitted'   => 'Dikirim',
-        'reviewed'    => 'Direview',
-        'shortlisted' => 'Shortlist',
-        'rejected'    => 'Ditolak',
-        'accepted'    => 'Diterima',
-        'cancelled'   => 'Dibatalkan pelamar',
+        'Dikirim'     => 'Dikirim',
+        'Direview'    => 'Direview',
+        'Shortlist'   => 'Shortlist',
+        'Ditolak'     => 'Ditolak',
+        'Diterima'    => 'Diterima',
+        'Dibatalkan'  => 'Dibatalkan pelamar',
     ];
 }
 
@@ -42,7 +42,7 @@ function work_types(): array {
 }
 
 function interview_status_label(string $s): string {
-    return ['scheduled' => 'Menunggu konfirmasi pelamar', 'confirmed' => 'Dikonfirmasi pelamar', 'cancelled' => 'Dibatalkan'][$s] ?? $s;
+    return ['Scheduled' => 'Menunggu konfirmasi pelamar', 'Confirmed' => 'Dikonfirmasi pelamar', 'Cancelled' => 'Dibatalkan', 'Completed' => 'Selesai'][$s] ?? $s;
 }
 
 /** Ubah daftar kunci "a,b,c" menjadi array yang sudah divalidasi. */
@@ -139,17 +139,17 @@ function delete_upload(?string $name, string $subdir): void {
 }
 
 /**
- * Guard halaman area Company: wajib login sebagai recruiter, akun harus
+ * Guard halaman area Company: wajib login sebagai company, akun harus
  * masih aktif, dan profil perusahaan dimuat. Mengembalikan baris companies
  * (+ kolom user: user_photo).
  */
 function company_guard(PDO $pdo): array {
-    require_role('recruiter');
+    require_role('company');
     $uid = (int)current_user()['id'];
     $stmt = $pdo->prepare(
         "SELECT c.*, u.status AS user_status, u.photo AS user_photo, u.name AS user_name
          FROM users u LEFT JOIN companies c ON c.user_id = u.id
-         WHERE u.id = ? AND u.role = 'recruiter' LIMIT 1"
+         WHERE u.id = ? AND u.role = 'company' LIMIT 1"
     );
     $stmt->execute([$uid]);
     $row = $stmt->fetch();
@@ -159,8 +159,8 @@ function company_guard(PDO $pdo): array {
         flash('error', 'Akun Anda tidak aktif atau tidak ditemukan.');
         redirect('../index.php');
     }
-    if ($row['id'] === null) { // jaga-jaga: akun recruiter tanpa baris perusahaan
-        $pdo->prepare("INSERT INTO companies (user_id, company_name, verification_status) VALUES (?, ?, 'pending')")
+    if ($row['id'] === null) { // jaga-jaga: akun company tanpa baris perusahaan
+        $pdo->prepare("INSERT INTO companies (user_id, name, verification_status) VALUES (?, ?, 'pending')")
             ->execute([$uid, current_user()['name']]);
         redirect('dashboard.php');
     }
@@ -169,7 +169,7 @@ function company_guard(PDO $pdo): array {
 
 /** Profil dianggap lengkap bila nama, deskripsi, dan alamat terisi. */
 function company_profile_complete(array $c): bool {
-    return trim((string)$c['company_name']) !== '' && trim((string)($c['description'] ?? '')) !== '' && trim((string)($c['address'] ?? '')) !== '';
+    return trim((string)$c['name']) !== '' && trim((string)($c['description'] ?? '')) !== '' && trim((string)($c['address'] ?? '')) !== '';
 }
 
 function verification_badge(string $status): string {
@@ -183,7 +183,7 @@ function verification_badge(string $status): string {
 }
 
 function status_badge(string $status): string {
-    $cls = ['submitted' => 'badge-info', 'reviewed' => 'badge-wait', 'shortlisted' => 'badge-purple', 'rejected' => 'badge-bad', 'accepted' => 'badge-ok', 'cancelled' => 'badge-muted'][$status] ?? 'badge-muted';
+    $cls = ['Dikirim' => 'badge-info', 'Direview' => 'badge-wait', 'Shortlist' => 'badge-purple', 'Ditolak' => 'badge-bad', 'Diterima' => 'badge-ok', 'Dibatalkan' => 'badge-muted'][$status] ?? 'badge-muted';
     return '<span class="badge ' . $cls . '">' . e(application_statuses()[$status] ?? $status) . '</span>';
 }
 
@@ -219,7 +219,7 @@ function company_header(string $title, string $active, array $company): void {
 <header class="topbar co-topbar"><a class="brand" href="../index.php" aria-label="Rangkul, beranda"><img class="brand-logo" src="../assets/img/rangkul-logo.png" alt="Rangkul"></a>
 <div class="user-nav">
 <?php if ($photo): ?><img class="co-avatar" src="../uploads/photos/<?= e(rawurlencode(basename($photo))) ?>" alt="Foto profil <?= e($user['name']) ?>"><?php else: ?><span class="co-avatar co-avatar-fallback" aria-hidden="true"><?= e(company_initial($user['name'])) ?></span><?php endif; ?>
-<span class="co-username"><?= e($user['name']) ?> · <?= e($company['company_name']) ?></span>
+<span class="co-username"><?= e($user['name']) ?> · <?= e($company['name']) ?></span>
 <form method="post" action="../logout.php" class="inline-form"><button class="btn btn-outline" type="submit">Logout</button></form></div></header>
 <nav class="co-nav" aria-label="Menu perusahaan"><ul>
 <?php foreach ($nav as $key => [$href, $label]): ?>

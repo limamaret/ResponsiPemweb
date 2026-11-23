@@ -32,7 +32,7 @@ $c = $pdo->prepare("SELECT COUNT(*) FROM vacancies v WHERE $where"); $c->execute
 [$page, $per, $offset, $pages] = paginate((int)$c->fetchColumn(), 10);
 $q = $pdo->prepare(
     "SELECT v.*, cat.name AS category_name,
-            (SELECT COUNT(*) FROM applications a WHERE a.vacancy_id = v.id AND a.status <> 'cancelled') AS applicant_count
+            (SELECT COUNT(*) FROM applications a WHERE a.vacancy_id = v.id AND a.status <> 'Dibatalkan') AS applicant_count
      FROM vacancies v JOIN categories cat ON cat.id = v.category_id
      WHERE $where ORDER BY v.created_at DESC, v.id DESC LIMIT $per OFFSET $offset"
 );

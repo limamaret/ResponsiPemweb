@@ -8,8 +8,8 @@ if (!$app) not_found('applicants.php');
 
 /** Status yang boleh dituju dari status saat ini. */
 function allowed_targets(string $current): array {
-    if (in_array($current, ['rejected', 'accepted', 'cancelled'], true)) return []; // final
-    $all = ['reviewed', 'shortlisted', 'rejected', 'accepted'];
+    if (in_array($current, ['Ditolak', 'Diterima', 'Dibatalkan'], true)) return []; // final
+    $all = ['Direview', 'Shortlist', 'Ditolak', 'Diterima'];
     return array_values(array_diff($all, [$current]));
 }
 
@@ -24,8 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $pdo->beginTransaction();
                 $pdo->prepare('UPDATE applications SET status = ? WHERE id = ?')->execute([$target, $id]);
-                if ($target === 'rejected') { // jadwal aktif ikut dibatalkan
-                    $pdo->prepare("UPDATE interviews SET status = 'cancelled' WHERE application_id = ? AND status <> 'cancelled'")->execute([$id]);
+                if ($target === 'Ditolak') { // jadwal aktif ikut dibatalkan
+                    $pdo->prepare("UPDATE interviews SET status = 'Cancelled' WHERE application_id = ? AND status <> 'Cancelled'")->execute([$id]);
                 }
                 $pdo->commit();
                 flash('success', 'Status pelamar diubah menjadi ' . application_statuses()[$target] . '.');
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $iv = $pdo->prepare('SELECT * FROM interviews WHERE application_id = ? LIMIT 1');
 $iv->execute([$id]); $interview = $iv->fetch() ?: null;
-$activeInterview = $interview && $interview['status'] !== 'cancelled';
+$activeInterview = $interview && $interview['status'] !== 'Cancelled';
 $targets = allowed_targets($app['status']);
 $hasCv = (bool)($app['cv_file'] ?: $app['profile_cv']);
 
@@ -95,11 +95,11 @@ company_header('Detail Pelamar', 'applicants', $company);
 
 <section class="card" aria-labelledby="h-iv"><h2 id="h-iv">Wawancara</h2>
 <?php if ($activeInterview): ?>
-<dl class="def-list"><dt>Jadwal</dt><dd><?= e(fmt_date($interview['interview_date'])) ?>, <?= e(substr($interview['interview_time'], 0, 5)) ?> WIB</dd>
+<dl class="def-list"><dt>Jadwal</dt><dd><?= e(fmt_date($interview['date'])) ?>, <?= e(substr($interview['time'], 0, 5)) ?> WIB</dd>
 <dt>Mode</dt><dd><?= $interview['mode'] === 'online' ? 'Online' : 'Offline' ?></dd>
 <dt><?= $interview['mode'] === 'online' ? 'Tautan' : 'Lokasi' ?></dt><dd><?= e($interview['location_or_link']) ?></dd>
 <dt>Catatan akomodasi</dt><dd><?= e($interview['accommodation_note'] ?: '-') ?></dd>
-<dt>Konfirmasi pelamar</dt><dd><span class="badge <?= $interview['status'] === 'confirmed' ? 'badge-ok' : 'badge-wait' ?>"><?= e(interview_status_label($interview['status'])) ?></span></dd></dl>
+<dt>Konfirmasi pelamar</dt><dd><span class="badge <?= $interview['status'] === 'Confirmed' ? 'badge-ok' : 'badge-wait' ?>"><?= e(interview_status_label($interview['status'])) ?></span></dd></dl>
 <div class="actions" style="margin-top:16px"><a class="btn btn-outline" href="interview-form.php?id=<?= (int)$interview['id'] ?>">Edit jadwal</a></div>
 <?php elseif ($app['status'] === 'shortlisted'): ?>
 <p style="font-size:14px;color:#475569"><?= $interview ? 'Jadwal sebelumnya telah dibatalkan. ' : 'Pelamar ini masuk Shortlist dan belum memiliki jadwal wawancara. ' ?></p>

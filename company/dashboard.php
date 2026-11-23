@@ -8,10 +8,10 @@ $today = date('Y-m-d');
 $q = $pdo->prepare("SELECT COUNT(*) FROM vacancies WHERE company_id = ? AND status = 'open' AND deadline >= ?");
 $q->execute([$cid, $today]); $activeVacancies = (int)$q->fetchColumn();
 
-$q = $pdo->prepare("SELECT COUNT(*) FROM applications a JOIN vacancies v ON v.id = a.vacancy_id WHERE v.company_id = ? AND a.status <> 'cancelled'");
+$q = $pdo->prepare("SELECT COUNT(*) FROM applications a JOIN vacancies v ON v.id = a.vacancy_id WHERE v.company_id = ? AND a.status <> 'Dibatalkan'");
 $q->execute([$cid]); $totalApplicants = (int)$q->fetchColumn();
 
-$q = $pdo->prepare("SELECT COUNT(*) FROM applications a JOIN vacancies v ON v.id = a.vacancy_id WHERE v.company_id = ? AND a.status = 'submitted'");
+$q = $pdo->prepare("SELECT COUNT(*) FROM applications a JOIN vacancies v ON v.id = a.vacancy_id WHERE v.company_id = ? AND a.status = 'Dikirim'");
 $q->execute([$cid]); $newApplicants = (int)$q->fetchColumn();
 
 $q = $pdo->prepare(
@@ -19,12 +19,12 @@ $q = $pdo->prepare(
      FROM interviews i JOIN applications a ON a.id = i.application_id
      JOIN vacancies v ON v.id = a.vacancy_id
      JOIN job_seekers js ON js.id = a.seeker_id JOIN users u ON u.id = js.user_id
-     WHERE v.company_id = ? AND i.status <> 'cancelled' AND CONCAT(i.interview_date,' ',i.interview_time) >= ?
-     ORDER BY i.interview_date, i.interview_time LIMIT 5"
+     WHERE v.company_id = ? AND i.status <> 'Cancelled' AND CONCAT(i.date,' ',i.time) >= ?
+     ORDER BY i.date, i.time LIMIT 5"
 );
 $q->execute([$cid, date('Y-m-d H:i:s')]); $upcoming = $q->fetchAll();
 
-$q = $pdo->prepare("SELECT COUNT(*) FROM interviews i JOIN applications a ON a.id = i.application_id JOIN vacancies v ON v.id = a.vacancy_id WHERE v.company_id = ? AND i.status <> 'cancelled' AND CONCAT(i.interview_date,' ',i.interview_time) >= ?");
+$q = $pdo->prepare("SELECT COUNT(*) FROM interviews i JOIN applications a ON a.id = i.application_id JOIN vacancies v ON v.id = a.vacancy_id WHERE v.company_id = ? AND i.status <> 'Cancelled' AND CONCAT(i.date,' ',i.time) >= ?");
 $q->execute([$cid, date('Y-m-d H:i:s')]); $upcomingCount = (int)$q->fetchColumn();
 
 $q = $pdo->prepare(
@@ -37,7 +37,7 @@ $q->execute([$cid]); $recent = $q->fetchAll();
 
 company_header('Dashboard', 'dashboard', $company);
 ?>
-<div class="page-head"><div><span class="eyebrow">DASHBOARD PERUSAHAAN</span><h1>Halo, <?= e($company['company_name']) ?></h1>
+<div class="page-head"><div><span class="eyebrow">DASHBOARD PERUSAHAAN</span><h1>Halo, <?= e($company['name']) ?></h1>
 <p>Status verifikasi: <?= verification_badge($company['verification_status']) ?></p></div>
 <a class="btn btn-primary" href="vacancy-form.php">+ Tambah lowongan</a></div>
 
@@ -62,8 +62,8 @@ company_header('Dashboard', 'dashboard', $company);
 <div class="table-wrap"><table class="table"><thead><tr><th scope="col">Pelamar</th><th scope="col">Jadwal</th><th scope="col">Status</th></tr></thead><tbody>
 <?php foreach ($upcoming as $i): ?><tr>
 <td><a href="applicant-detail.php?id=<?= (int)$i['app_id'] ?>"><?= e($i['seeker_name']) ?></a><span class="sub"><?= e($i['vacancy_title']) ?></span></td>
-<td><?= e(fmt_date($i['interview_date'])) ?><span class="sub"><?= e(substr($i['interview_time'], 0, 5)) ?> WIB · <?= $i['mode'] === 'online' ? 'Online' : 'Offline' ?></span></td>
-<td><span class="badge <?= $i['status'] === 'confirmed' ? 'badge-ok' : 'badge-wait' ?>"><?= e(interview_status_label($i['status'])) ?></span></td></tr>
+<td><?= e(fmt_date($i['date'])) ?><span class="sub"><?= e(substr($i['time'], 0, 5)) ?> WIB · <?= $i['mode'] === 'online' ? 'Online' : 'Offline' ?></span></td>
+<td><span class="badge <?= $i['status'] === 'Confirmed' ? 'badge-ok' : 'badge-wait' ?>"><?= e(interview_status_label($i['status'])) ?></span></td></tr>
 <?php endforeach; ?></tbody></table></div>
 <p style="margin:14px 0 0"><a href="interviews.php">Lihat semua jadwal →</a></p><?php endif; ?></section>
 

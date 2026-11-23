@@ -4,7 +4,7 @@ $company = company_guard($pdo);
 $cid = (int)$company['id'];
 $errors = [];
 $f = [
-    'company_name' => $company['company_name'],
+    'name' => $company['name'],
     'description'  => $company['description'] ?? '',
     'address'      => $company['address'] ?? '',
     'website'      => $company['website'] ?? '',
@@ -15,7 +15,7 @@ $f = [
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     verify_csrf();
-    $f['company_name'] = trim($_POST['company_name'] ?? '');
+    $f['name'] = trim($_POST['company_name'] ?? '');
     $f['description']  = trim($_POST['description'] ?? '');
     $f['address']      = trim($_POST['address'] ?? '');
     $f['website']      = trim($_POST['website'] ?? '');
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $f['is_inclusive'] = isset($_POST['is_inclusive']) ? 1 : 0;
     $f['facilities']   = csv_keys(keys_to_csv($_POST['facilities'] ?? []));
 
-    if ($f['company_name'] === '' || mb_strlen($f['company_name']) > 180) $errors['company_name'] = 'Nama perusahaan wajib diisi (maksimal 180 karakter).';
+    if ($f['name'] === '' || mb_strlen($f['name']) > 180) $errors['company_name'] = 'Nama perusahaan wajib diisi (maksimal 180 karakter).';
     if ($f['description'] === '') $errors['description'] = 'Deskripsi perusahaan wajib diisi.';
     if ($f['address'] === '' || mb_strlen($f['address']) > 255) $errors['address'] = 'Alamat wajib diisi (maksimal 255 karakter).';
     if ($f['website'] !== '' && (!filter_var($f['website'], FILTER_VALIDATE_URL) || !preg_match('#^https?://#i', $f['website']) || mb_strlen($f['website']) > 255)) {
@@ -39,8 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         $logo = $newLogo ?? $company['logo'];
         $pdo->prepare(
-            'UPDATE companies SET company_name=?, description=?, address=?, website=?, phone=?, logo=?, is_inclusive=?, accessibility_facilities=? WHERE id=? AND user_id=?'
-        )->execute([$f['company_name'], $f['description'], $f['address'], $f['website'] ?: null, $f['phone'] ?: null, $logo, $f['is_inclusive'], implode(',', $f['facilities']), $cid, (int)current_user()['id']]);
+            'UPDATE companies SET name=?, description=?, address=?, website=?, phone=?, logo=?, is_inclusive=?, accessibility_facilities=? WHERE id=? AND user_id=?'
+        )->execute([$f['name'], $f['description'], $f['address'], $f['website'] ?: null, $f['phone'] ?: null, $logo, $f['is_inclusive'], implode(',', $f['facilities']), $cid, (int)current_user()['id']]);
         if ($newLogo !== null) delete_upload($company['logo'], 'logos');
         flash('success', 'Profil perusahaan berhasil disimpan.');
         redirect('profile.php');
@@ -54,7 +54,7 @@ company_header('Profil Perusahaan', 'profile', $company);
 <a class="btn btn-outline" href="../company.php?id=<?= $cid ?>" target="_blank" rel="noopener">Lihat halaman publik ↗</a></div>
 
 <section class="card" aria-labelledby="h-ver" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
-<?= company_logo_html($company['logo'], $company['company_name']) ?>
+<?= company_logo_html($company['logo'], $company['name']) ?>
 <div><h2 id="h-ver" style="margin-bottom:8px">Status verifikasi</h2><?= verification_badge($company['verification_status']) ?>
 <p class="hint" style="margin:8px 0 0;font-size:13px;color:#475569">Badge perusahaan terverifikasi dan label inklusif tampil penuh di halaman publik hanya setelah Admin memverifikasi perusahaan Anda.</p></div></section>
 
@@ -63,7 +63,7 @@ company_header('Profil Perusahaan', 'profile', $company);
 <?= csrf_field() ?>
 <h2>Data perusahaan</h2>
 <div class="form-grid">
-<div class="field"><label for="company_name">Nama perusahaan <span class="req" aria-hidden="true">*</span></label><input id="company_name" name="company_name" value="<?= e($f['company_name']) ?>" required maxlength="180"<?= isset($errors['company_name']) ? ' aria-invalid="true"' : '' ?>><?php if (isset($errors['company_name'])): ?><span class="field-error"><?= e($errors['company_name']) ?></span><?php endif; ?></div>
+<div class="field"><label for="company_name">Nama perusahaan <span class="req" aria-hidden="true">*</span></label><input id="company_name" name="company_name" value="<?= e($f['name']) ?>" required maxlength="180"<?= isset($errors['company_name']) ? ' aria-invalid="true"' : '' ?>><?php if (isset($errors['company_name'])): ?><span class="field-error"><?= e($errors['company_name']) ?></span><?php endif; ?></div>
 <div class="field"><label for="phone">Nomor telepon</label><input id="phone" name="phone" type="tel" value="<?= e($f['phone']) ?>" maxlength="40"><?php if (isset($errors['phone'])): ?><span class="field-error"><?= e($errors['phone']) ?></span><?php endif; ?></div>
 </div>
 <div class="field"><label for="description">Deskripsi perusahaan <span class="req" aria-hidden="true">*</span></label><textarea id="description" name="description" required><?= e($f['description']) ?></textarea><?php if (isset($errors['description'])): ?><span class="field-error"><?= e($errors['description']) ?></span><?php endif; ?></div>
