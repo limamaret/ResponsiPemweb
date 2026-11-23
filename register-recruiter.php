@@ -15,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     else {
         try {
             $pdo->beginTransaction();
-            $stmt = $pdo->prepare("INSERT INTO users (name,email,password,role,status) VALUES (?,?,?,'recruiter','active')");
+            $stmt = $pdo->prepare("INSERT INTO users (name,email,password,role,status) VALUES (?,?,?,'company','active')");
             $stmt->execute([$name,$email,password_hash($password,PASSWORD_DEFAULT)]);
             $userId = (int)$pdo->lastInsertId();
-            $stmt = $pdo->prepare("INSERT INTO companies (user_id, company_name, phone, verification_status) VALUES (?,?,?,'pending')");
+            $stmt = $pdo->prepare("INSERT INTO companies (user_id, name, phone, verification_status) VALUES (?,?,?,'pending')");
             $stmt->execute([$userId,$company,$phone]);
             $pdo->commit();
             flash('success','Pendaftaran perusahaan berhasil. Silakan login, lengkapi profil perusahaan, lalu tunggu verifikasi Admin.');
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-$title='Daftarkan perusahaan'; $subtitle='Buat akun Recruiter untuk mulai mencari kandidat.'; $roleLabel='REGISTRASI PERUSAHAAN';
+$title='Daftarkan perusahaan'; $subtitle='Buat akun Perusahaan untuk mulai mencari kandidat.'; $roleLabel='REGISTRASI PERUSAHAAN';
 include __DIR__ . '/includes/auth-form.php';
 ?>
 <form method="post" class="form-stack">
@@ -41,6 +41,6 @@ include __DIR__ . '/includes/auth-form.php';
 <label>Password<input type="password" name="password" placeholder="Minimal 8 karakter" minlength="8" required></label>
 <label>Konfirmasi password<input type="password" name="confirm_password" placeholder="Ulangi password" required></label>
 <label class="check"><input type="checkbox" required> Saya menyetujui syarat dan ketentuan Rangkul.</label>
-<button class="btn btn-primary btn-block" type="submit">Daftar sebagai Recruiter</button>
-</form><p class="switch-auth">Sudah punya akun? <a href="login-recruiter.php">Login Recruiter</a></p>
+<button class="btn btn-primary btn-block" type="submit">Daftar sebagai Perusahaan</button>
+</form><p class="switch-auth">Sudah punya akun? <a href="login-recruiter.php">Login Perusahaan</a></p>
 </div></main></div><script src="assets/js/custom-cursor.js" defer></script></body></html>
