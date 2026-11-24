@@ -22,7 +22,7 @@ $f = $existing ? [
     'category_id' => (int)$existing['category_id'], 'work_type' => $existing['work_type'], 'location' => $existing['location'],
     'salary_min' => $existing['salary_min'] !== null ? (string)(int)$existing['salary_min'] : '',
     'salary_max' => $existing['salary_max'] !== null ? (string)(int)$existing['salary_max'] : '',
-    'deadline' => $existing['deadline'], 'tags' => csv_keys(json_decode($existing['accessibility_tags'] ?? '[]', true) ?: []), 'status' => $existing['status'],
+    'deadline' => $existing['deadline'], 'tags' => csv_keys_any($existing['accessibility_tags'] ?? []), 'status' => $existing['status'],
 ] : ['title' => '', 'description' => '', 'requirements' => '', 'category_id' => 0, 'work_type' => 'onsite', 'location' => '',
      'salary_min' => '', 'salary_max' => '', 'deadline' => '', 'tags' => [], 'status' => 'open'];
 
