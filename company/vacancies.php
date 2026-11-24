@@ -53,7 +53,7 @@ company_header('Kelola Lowongan', 'vacancies', $company);
 <div class="table-wrap"><table class="table"><thead><tr><th scope="col">Lowongan</th><th scope="col">Deadline</th><th scope="col">Pelamar</th><th scope="col">Status</th><th scope="col">Aksi</th></tr></thead><tbody>
 <?php foreach ($rows as $v): $expired = $v['deadline'] < date('Y-m-d'); ?>
 <tr><td><b><?= e($v['title']) ?></b><span class="sub"><?= e($v['category_name']) ?> · <?= e(work_types()[$v['work_type']] ?? $v['work_type']) ?> · <?= e($v['location']) ?></span>
-<?php foreach (csv_keys(json_decode($v['accessibility_tags'] ?? '[]', true) ?: []) as $k): ?><span class="tag tag-access"><?= e(access_options()[$k]) ?></span><?php endforeach; ?></td>
+<?php foreach (csv_keys_any($v['accessibility_tags'] ?? []) as $k): ?><span class="tag tag-access"><?= e(access_options()[$k]) ?></span><?php endforeach; ?></td>
 <td><?= e(fmt_date($v['deadline'])) ?><?= $expired ? '<span class="sub">Sudah lewat</span>' : '' ?></td>
 <td><a href="applicants.php?vacancy_id=<?= (int)$v['id'] ?>"><?= (int)$v['applicant_count'] ?> pelamar</a></td>
 <td><?php if ($v['status'] === 'open' && !$expired): ?><span class="badge badge-ok">Terbuka</span><?php elseif ($v['status'] === 'open'): ?><span class="badge badge-wait">Lewat deadline</span><?php else: ?><span class="badge badge-muted">Ditutup</span><?php endif; ?></td>
