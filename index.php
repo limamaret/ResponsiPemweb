@@ -37,7 +37,7 @@ try {
 <header class="landing-nav"><div class="landing-nav-inner">
 <a class="landing-brand" href="index.php" aria-label="Rangkul, halaman utama"><img src="assets/img/rangkul-logo.png" alt="Rangkul"></a>
 <nav class="landing-links" aria-label="Navigasi utama"><a href="#tentang">Tentang</a><a href="#keunggulan">Keunggulan</a><a href="#cara-kerja">Cara kerja</a><?php if ($latestJobs || $inclusiveCompanies): ?><a href="#lowongan">Lowongan</a><?php endif; ?><a href="#fitur">Fitur</a><a href="#aksesibilitas">Aksesibilitas</a><a href="#faq">FAQ</a></nav>
-<div class="landing-nav-actions"><a class="nav-login" href="login-recruiter.php">Untuk Perusahaan</a><a class="nav-login" href="login-job-seeker.php">Masuk</a><button class="mobile-menu" type="button" aria-label="Buka navigasi" aria-expanded="false">☰</button></div>
+<div class="landing-nav-actions"><a class="nav-login" href="login-recruiter.php">Company</a><a class="nav-login" href="login-job-seeker.php">Seeker</a><button class="mobile-menu" type="button" aria-label="Buka navigasi" aria-expanded="false">☰</button></div>
 </div></header>
 <main id="konten">
 <?php if ($success): ?><div class="notice success landing-notice"><?= e($success) ?></div><?php endif; ?>

@@ -47,10 +47,13 @@ public_header($co['company_name'], mb_substr(strip_tags((string)$co['description
 <dl class="def-list" style="grid-template-columns:90px 1fr">
 <dt>Alamat</dt><dd><?= e($co['address'] ?: '-') ?></dd>
 <dt>Website</dt><dd><?php if ($co['website'] && preg_match('#^https?://#i', $co['website'])): ?><a href="<?= e($co['website']) ?>" target="_blank" rel="noopener noreferrer"><?= e($co['website']) ?></a><?php else: ?>-<?php endif; ?></dd></dl></div>
-<?php if ($verified && ($co['is_inclusive'] || $co['accessibility_facilities'])): ?>
+<?php 
+    $facilities = json_decode($co['accessibility_facilities'] ?? '[]', true) ?: [];
+    if ($verified && ($co['is_inclusive'] || $facilities)): 
+?>
 <div class="card"><h2>Komitmen inklusif</h2>
 <?php if ($co['is_inclusive']): ?><p style="font-size:14px;line-height:1.7;color:#1e293b">Perusahaan ini berkomitmen membuka kesempatan kerja yang setara, termasuk bagi penyandang disabilitas.</p><?php endif; ?>
-<?php $fac = csv_keys($co['accessibility_facilities']); if ($fac): ?><p style="font-size:13px;font-weight:700;margin:12px 0 8px">Fasilitas aksesibilitas</p>
+<?php $fac = csv_keys(json_decode($co['accessibility_facilities'] ?? '[]', true) ?: []); if ($fac): ?><p style="font-size:13px;font-weight:700;margin:12px 0 8px">Fasilitas aksesibilitas</p>
 <?php foreach ($fac as $k): ?><span class="tag tag-access"><?= e(access_options()[$k]) ?></span><?php endforeach; endif; ?></div>
 <?php endif; ?>
 </aside>

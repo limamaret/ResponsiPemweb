@@ -10,7 +10,7 @@ $f = [
     'website'      => $company['website'] ?? '',
     'phone'        => $company['phone'] ?? '',
     'is_inclusive' => (int)$company['is_inclusive'],
-    'facilities'   => csv_keys($company['accessibility_facilities'] ?? ''),
+    'facilities'   => csv_keys(json_decode($company['accessibility_facilities'] ?? '[]', true) ?: []),
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $logo = $newLogo ?? $company['logo'];
         $pdo->prepare(
             'UPDATE companies SET name=?, description=?, address=?, website=?, phone=?, logo=?, is_inclusive=?, accessibility_facilities=? WHERE id=? AND user_id=?'
-        )->execute([$f['name'], $f['description'], $f['address'], $f['website'] ?: null, $f['phone'] ?: null, $logo, $f['is_inclusive'], implode(',', $f['facilities']), $cid, (int)current_user()['id']]);
+        )->execute([$f['name'], $f['description'], $f['address'], $f['website'] ?: null, $f['phone'] ?: null, $logo, $f['is_inclusive'], json_encode($f['facilities']), $cid, (int)current_user()['id']]);
         if ($newLogo !== null) delete_upload($company['logo'], 'logos');
         flash('success', 'Profil perusahaan berhasil disimpan.');
         redirect('profile.php');
