@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/_layout.php';
+require_once __DIR__ . '/../includes/company.php';
 if($_SERVER['REQUEST_METHOD']==='POST'){
  verify_csrf();$id=(int)($_POST['id']??0);$action=$_POST['action']??'';
  if($id>0 && in_array($action,['verified','rejected','pending'],true)){
