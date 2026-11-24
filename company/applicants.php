@@ -9,9 +9,9 @@ $vacIds = array_map('intval', array_column($vacancies, 'id'));
 
 $vacId = (int)($_GET['vacancy_id'] ?? 0);
 $status = $_GET['status'] ?? '';
-$where = 'v.company_id = ?'; $params = [$cid];
-if ($vacId && in_array($vacId, $vacIds, true)) { $where .= ' AND v.id = ?'; $params[] = $vacId; } else { $vacId = 0; }
-if (isset(application_statuses()[$status])) { $where .= ' AND a.status = ?'; $params[] = $status; } else { $status = ''; }
+$where = 'v.company_id = :cid'; $params = ['cid' => $cid];
+if ($vacId && in_array($vacId, $vacIds, true)) { $where .= ' AND v.id = :vacid'; $params[':vacid'] = $vacId; } else { $vacId = 0; }
+if (isset(application_statuses()[$status])) { $where .= ' AND a.status = :appstatus'; $params[':appstatus'] = $status; } else { $status = ''; }
 
 $c = $pdo->prepare("SELECT COUNT(*) FROM applications a JOIN vacancies v ON v.id = a.vacancy_id WHERE $where");
 $c->execute($params);

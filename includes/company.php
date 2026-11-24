@@ -52,6 +52,17 @@ function csv_keys(?string $csv): array {
     return array_values(array_intersect(array_map('trim', explode(',', $csv)), $valid));
 }
 
+/** Alias yang menerima array atau string CSV. */
+function csv_keys_any($csv): array {
+    if ($csv === null || $csv === '') return [];
+    if (is_array($csv)) {
+        $valid = array_keys(access_options());
+        return array_values(array_intersect(array_map('strval', $csv), $valid));
+    }
+    $valid = array_keys(access_options());
+    return array_values(array_intersect(array_map('trim', explode(',', $csv)), $valid));
+}
+
 /** Ambil input checkbox (array) dan simpan hanya kunci yang valid sebagai CSV. */
 function keys_to_csv($input): string {
     if (!is_array($input)) return '';

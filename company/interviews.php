@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $when = $_GET['when'] ?? 'upcoming';
 if (!in_array($when, ['upcoming', 'past', 'all'], true)) $when = 'upcoming';
 $now = date('Y-m-d H:i:s');
-$where = 'v.company_id = ?'; $params = [$cid];
-if ($when === 'upcoming') { $where .= " AND i.status <> 'Cancelled' AND CONCAT(i.date,' ',i.time) >= ?"; $params[] = $now; }
-elseif ($when === 'past') { $where .= " AND (i.status = 'Cancelled' OR CONCAT(i.date,' ',i.time) < ?)"; $params[] = $now; }
+$where = 'v.company_id = :cid'; $params = ['cid' => $cid];
+if ($when === 'upcoming') { $where .= " AND i.status <> 'Cancelled' AND CONCAT(i.date,' ',i.time) >= :now"; $params[':now'] = $now; }
+elseif ($when === 'past') { $where .= " AND (i.status = 'Cancelled' OR CONCAT(i.date,' ',i.time) < :now)"; $params[':now'] = $now; }
 
 $base = 'FROM interviews i JOIN applications a ON a.id = i.application_id JOIN vacancies v ON v.id = a.vacancy_id JOIN job_seekers js ON js.id = a.seeker_id JOIN users u ON u.id = js.user_id';
 $c = $pdo->prepare("SELECT COUNT(*) $base WHERE $where"); $c->execute($params);

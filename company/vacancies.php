@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $status = $_GET['status'] ?? '';
-$where = 'v.company_id = ?'; $params = [$cid];
+$where = 'v.company_id = :cid'; $params = ['cid' => $cid];
 if ($status === 'open') { $where .= " AND v.status = 'open' AND v.deadline >= CURDATE()"; }
 elseif ($status === 'closed') { $where .= " AND (v.status = 'closed' OR v.deadline < CURDATE())"; }
 

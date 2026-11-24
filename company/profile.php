@@ -10,7 +10,7 @@ $f = [
     'website'      => $company['website'] ?? '',
     'phone'        => $company['phone'] ?? '',
     'is_inclusive' => (int)$company['is_inclusive'],
-    'facilities'   => csv_keys(json_decode($company['accessibility_facilities'] ?? '[]', true) ?: []),
+    'facilities'   => csv_keys_any(json_decode($company['accessibility_facilities'] ?? '[]', true) ?: []),
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
