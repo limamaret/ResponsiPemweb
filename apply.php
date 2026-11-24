@@ -67,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $appId = application_create($vacancyId, $seekerId, $cvFile, $coverLetter ?: null);
         if ($appId) {
             flash('success', 'Lamaran berhasil dikirim! Perusahaan akan meninjau profil Anda.');
-            redirect('applications.php');
+            redirect('job-seeker/applications.php');
         } else {
             $error = 'Gagal mengirim lamaran. Silakan coba lagi.';
         }
