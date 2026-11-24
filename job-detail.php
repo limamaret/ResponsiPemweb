@@ -33,7 +33,7 @@ public_header($v['title'] . ' — ' . $v['company_name'], mb_substr(strip_tags((
 <p style="margin:0"><a href="company.php?id=<?= (int)$v['cid'] ?>"><?= e($v['company_name']) ?></a> <?= $v['verification_status'] === 'verified' ? '<span class="badge badge-ok">✓ Terverifikasi</span>' : '' ?> <?= ($v['verification_status'] === 'verified' && $v['is_inclusive']) ? '<span class="badge badge-inclusive">♡ Perusahaan inklusif</span>' : '' ?></p></div></div>
 <section class="card"><h2>Deskripsi pekerjaan</h2><p class="prose"><?= e($v['description']) ?></p></section>
 <section class="card"><h2>Persyaratan</h2><p class="prose"><?= e($v['requirements']) ?></p></section>
-<?php $tags = csv_keys($v['accessibility_tags']); ?>
+<?php $tags = csv_keys(json_decode($v['accessibility_tags'] ?? '[]', true) ?: []); ?>
 <section class="card"><h2>Aksesibilitas lowongan ini</h2>
 <?php if ($tags): foreach ($tags as $k): ?><span class="tag tag-access"><?= e(access_options()[$k]) ?></span><?php endforeach; else: ?><p class="muted" style="margin:0">Perusahaan belum mencantumkan fasilitas aksesibilitas khusus untuk posisi ini.</p><?php endif; ?></section>
 </div>

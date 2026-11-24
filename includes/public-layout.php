@@ -34,7 +34,7 @@ function public_job_card(array $v): void {
 <span class="co-name"><?= company_logo_html($v['logo'] ?? null, $v['company_name'], '', 'co-logo co-logo-sm') ?><span><?= e($v['company_name']) ?><?= ($v['verification_status'] ?? '') === 'verified' ? ' <span class="badge badge-ok" style="margin-left:4px">✓</span>' : '' ?></span></span>
 <h3><?= e($v['title']) ?></h3>
 <p class="meta"><?= e($v['category_name']) ?> · <?= e(work_types()[$v['work_type']] ?? $v['work_type']) ?> · <?= e($v['location']) ?></p>
-<?php foreach (array_slice(csv_keys($v['accessibility_tags'] ?? ''), 0, 3) as $k): ?><span class="tag tag-access"><?= e(access_options()[$k]) ?></span><?php endforeach; ?>
+<?php foreach (array_slice(csv_keys(json_decode($v['accessibility_tags'] ?? '[]', true) ?: []), 0, 3) as $k): ?><span class="tag tag-access"><?= e(access_options()[$k]) ?></span><?php endforeach; ?>
 </a>
 <?php
 }
